@@ -33,7 +33,7 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 4%;
+  padding: 0 2.5%;
   font-weight: 700;
   font-size: clamp(11px, 2.6vw, 16px);
   color: #ffd54a;
@@ -52,19 +52,16 @@ canvas#game {
 }
 
 #backBtn {
-  position: absolute;
-  top: 10%;
-  left: 2.5%;
-  z-index: 4;
-  padding: 5px 10px;
-  border-radius: 9px;
+  padding: 3px 9px;
+  border-radius: 8px;
   border: 2px solid #3a5bff;
-  background: rgba(15, 15, 45, 0.7);
+  background: rgba(58, 91, 255, 0.22);
   color: #ffd54a;
-  font-size: clamp(10px, 2.6vw, 13px);
+  font-size: clamp(10px, 2.4vw, 14px);
   font-weight: 700;
   cursor: pointer;
   display: none;
+  flex: none;
 }
 
 .overlay {

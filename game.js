@@ -72,14 +72,20 @@
   };
   const OPP = { up: "down", down: "up", left: "right", right: "left", stop: "stop" };
 
+  // Spookjes zijn duidelijk langzamer dan Pac-Man, zodat je kunt ontsnappen.
   const LEVEL_CFG = [
-    { ghostSpeed: 0.070, frightSec: 7 },
-    { ghostSpeed: 0.078, frightSec: 6 },
-    { ghostSpeed: 0.086, frightSec: 5 },
+    { ghostSpeed: 0.056, frightSec: 8 },
+    { ghostSpeed: 0.062, frightSec: 7 },
+    { ghostSpeed: 0.068, frightSec: 6 },
   ];
-  const PAC_SPEED = 0.082;      // tegels per logica-stap (60/s)
-  const FRIGHT_SPEED = 0.050;
+  const PAC_SPEED = 0.084;      // tegels per logica-stap (60/s)
+  const FRIGHT_SPEED = 0.046;
   const EATEN_SPEED = 0.150;
+
+  // Scatter/chase-ritme: spookjes jagen niet non-stop, maar gaan
+  // afwisselend naar hun eigen hoek. Geeft veel ademruimte.
+  const SCATTER_SEC = 8;
+  const CHASE_SEC = 12;
 
   const state = {
     scene: "menu",        // menu | play | message
@@ -97,7 +103,17 @@
     ghostSpawns: [],
     time: 0,
     ready: 0,             // korte "klaar"-pauze bij (her)start
+    mode: "scatter",      // scatter | chase (globaal ritme)
+    modeTimer: SCATTER_SEC,
   };
+
+  // Hoeken waar spookjes tijdens 'scatter' naartoe gaan.
+  const SCATTER_CORNERS = [
+    { x: 1, y: 1 },
+    { x: COLS - 2, y: 1 },
+    { x: 1, y: ROWS - 2 },
+    { x: COLS - 2, y: ROWS - 2 },
+  ];
 
   // ---- Doolhof inladen ----
   function loadLevel(idx) {
@@ -140,11 +156,14 @@
       dir: DIRS.up, dirName: "up",
       color: colors[i % colors.length],
       state: "chase",           // chase | fright | eaten
-      releaseAt: i * 1.6,       // gespreid loslaten (seconden)
+      scatter: SCATTER_CORNERS[i % SCATTER_CORNERS.length],
+      releaseAt: 1.5 + i * 2.2, // rustig gespreid loslaten (seconden)
       blink: false,
     }));
 
     state.frightTimer = 0;
+    state.mode = "scatter";
+    state.modeTimer = SCATTER_SEC;
     state.ready = 1.2;
   }
 
@@ -208,6 +227,7 @@
       // doel bepalen
       let target;
       if (g.state === "eaten") target = g.spawn;
+      else if (state.mode === "scatter") target = g.scatter;
       else target = { x: Math.round(state.pac.x), y: Math.round(state.pac.y) };
 
       // opties: alle richtingen behalve terug (tenzij doodlopend)
@@ -279,9 +299,11 @@
       state.ghosts.forEach((g, i) => {
         g.x = g.spawn.x; g.y = g.spawn.y;
         g.state = "chase"; g.dir = DIRS.up; g.dirName = "up";
-        g.releaseAt = state.time + i * 1.2;
+        g.releaseAt = state.time + 1.5 + i * 2.2;
       });
       state.frightTimer = 0;
+      state.mode = "scatter";
+      state.modeTimer = SCATTER_SEC;
       state.ready = 1.2;
     }
     updateHud();
@@ -521,6 +543,15 @@
     }
 
     const cfg = LEVEL_CFG[state.levelIndex];
+
+    // scatter/chase-ritme (staat stil tijdens fright)
+    if (state.frightTimer <= 0) {
+      state.modeTimer -= dt;
+      if (state.modeTimer <= 0) {
+        state.mode = state.mode === "scatter" ? "chase" : "scatter";
+        state.modeTimer = state.mode === "scatter" ? SCATTER_SEC : CHASE_SEC;
+      }
+    }
 
     movePac(state.pac);
 
