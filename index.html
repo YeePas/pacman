@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Timo & Kaj Pac-Man</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Speelveld -->
+    <div id="stage">
+      <div id="hud">
+        <div class="hud-item">Score <span id="score">0</span></div>
+        <div class="hud-item">Level <span id="level">1</span></div>
+        <div class="hud-item">Levens <span id="lives">❤️❤️❤️</span></div>
+      </div>
+      <canvas id="game"></canvas>
+
+      <!-- Startmenu -->
+      <div id="menu" class="overlay">
+        <h1>🍔 Pac-Man 🍔</h1>
+        <p class="sub">Kies wie je speelt</p>
+        <div class="chars">
+          <button class="char" data-char="timo">
+            <span class="avatar" id="av-timo">T</span>
+            <span class="name">Timo</span>
+          </button>
+          <button class="char" data-char="kaj">
+            <span class="avatar" id="av-kaj">K</span>
+            <span class="name">Kaj</span>
+          </button>
+        </div>
+        <p class="sub">Level</p>
+        <div class="levels">
+          <button class="lvl" data-lvl="1">1</button>
+          <button class="lvl" data-lvl="2">2</button>
+          <button class="lvl" data-lvl="3">3</button>
+        </div>
+        <button id="start" disabled>Speel!</button>
+        <p class="hint">Pijltjestoetsen of WASD · op telefoon: swipen</p>
+      </div>
+
+      <!-- Tussenschermen -->
+      <div id="message" class="overlay hidden">
+        <h2 id="msg-title"></h2>
+        <p id="msg-text"></p>
+        <button id="msg-btn"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="mazes.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
