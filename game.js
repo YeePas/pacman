@@ -195,7 +195,9 @@
   // één stap kleiner is dan de midden-drempel EPS.
   function movePac(pac) {
     const c = atCenter(pac);
-    if (c && !pac.wasCenter) {
+    // Beslis bij aankomst in een tegel, én blijf beslissen zolang Pac-Man
+    // stilstaat (tegen een muur), zodat invoer altijd wordt opgepakt.
+    if (c && (!pac.wasCenter || pac.dir === DIRS.stop)) {
       const cx = Math.round(pac.x), cy = Math.round(pac.y);
       pac.x = cx; pac.y = cy;
       // eten
