@@ -51,6 +51,22 @@ canvas#game {
   display: block;
 }
 
+#backBtn {
+  position: absolute;
+  top: 10%;
+  left: 2.5%;
+  z-index: 4;
+  padding: 5px 10px;
+  border-radius: 9px;
+  border: 2px solid #3a5bff;
+  background: rgba(15, 15, 45, 0.7);
+  color: #ffd54a;
+  font-size: clamp(10px, 2.6vw, 13px);
+  font-weight: 700;
+  cursor: pointer;
+  display: none;
+}
+
 .overlay {
   position: absolute;
   inset: 0;

@@ -565,6 +565,15 @@
     state.scene = "message";
   }
 
+  // ---- Terug naar menu ----
+  function goToMenu() {
+    state.scene = "menu";
+    document.getElementById("message").classList.add("hidden");
+    document.getElementById("menu").classList.remove("hidden");
+    document.getElementById("backBtn").style.display = "none";
+  }
+  document.getElementById("backBtn").addEventListener("click", goToMenu);
+
   // ---- Invoer ----
   const keyMap = {
     ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right",
@@ -572,8 +581,12 @@
     W: "up", S: "down", A: "left", D: "right",
   };
   window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && state.scene === "play") {
+      goToMenu();
+      return;
+    }
     const dir = keyMap[e.key];
-    if (dir) {
+    if (dir && state.scene === "play") {
       e.preventDefault();
       state.pac.want = DIRS[dir];
       state.pac.wantName = dir;
@@ -623,6 +636,7 @@
   });
   document.getElementById("start").addEventListener("click", () => {
     document.getElementById("menu").classList.add("hidden");
+    document.getElementById("backBtn").style.display = "block";
     state.score = 0;
     state.lives = 3;
     state.levelIndex = selectedLevel - 1;
