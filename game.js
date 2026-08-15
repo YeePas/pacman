@@ -80,7 +80,7 @@
   ];
   const PAC_SPEED = 0.084;      // tegels per logica-stap (60/s)
   const FRIGHT_SPEED = 0.046;
-  const EATEN_SPEED = 0.150;
+  const EATEN_SPEED = 0.110;  // < 2*EPS zodat de gevangenis-tegel altijd herkend wordt
 
   // Scatter/chase-ritme: spookjes jagen niet non-stop, maar gaan
   // afwisselend naar hun eigen hoek. Geeft veel ademruimte.
@@ -147,7 +147,7 @@
       x: state.pacSpawn.x, y: state.pacSpawn.y,
       dir: DIRS.left, dirName: "left",
       want: DIRS.left, wantName: "left",
-      speed: PAC_SPEED, mouth: 0,
+      speed: PAC_SPEED, mouth: 0, wasCenter: false,
     };
 
     // Spookjes
@@ -159,7 +159,7 @@
       state: "chase",           // chase | fright | eaten
       scatter: SCATTER_CORNERS[i % SCATTER_CORNERS.length],
       releaseAt: 1.5 + i * 2.2, // rustig gespreid loslaten (seconden)
-      blink: false,
+      blink: false, wasCenter: false,
     }));
 
     state.frightTimer = 0;
@@ -190,8 +190,12 @@
   }
 
   // ---- Beweging Pac-Man ----
+  // Beslissingen alleen op het moment van AANKOMEN in een tegel (oplopende
+  // flank), anders blijft een langzame speler op de tegel "hangen" doordat
+  // één stap kleiner is dan de midden-drempel EPS.
   function movePac(pac) {
-    if (atCenter(pac)) {
+    const c = atCenter(pac);
+    if (c && !pac.wasCenter) {
       const cx = Math.round(pac.x), cy = Math.round(pac.y);
       pac.x = cx; pac.y = cy;
       // eten
@@ -202,6 +206,7 @@
       if (canGo(cx, cy, pac.want)) { pac.dir = pac.want; pac.dirName = pac.wantName; }
       if (!canGo(cx, cy, pac.dir)) { pac.dir = DIRS.stop; }
     }
+    pac.wasCenter = c;
     pac.x = wrapX(pac.x + pac.dir.x * pac.speed);
     pac.y += pac.dir.y * pac.speed;
     if (pac.dir !== DIRS.stop) pac.mouth += 0.25;
@@ -216,7 +221,8 @@
     if (g.state === "fright") speed = FRIGHT_SPEED;
     if (g.state === "eaten") speed = EATEN_SPEED;
 
-    if (atCenter(g)) {
+    const c = atCenter(g);
+    if (c && !g.wasCenter) {
       const cx = Math.round(g.x), cy = Math.round(g.y);
       g.x = cx; g.y = cy;
 
@@ -253,6 +259,7 @@
       g.dir = DIRS[choice];
       g.dirName = choice;
     }
+    g.wasCenter = c;
     g.x = wrapX(g.x + g.dir.x * speed);
     g.y += g.dir.y * speed;
   }
@@ -298,9 +305,11 @@
       state.pac.x = state.pacSpawn.x; state.pac.y = state.pacSpawn.y;
       state.pac.dir = DIRS.left; state.pac.dirName = "left";
       state.pac.want = DIRS.left; state.pac.wantName = "left";
+      state.pac.wasCenter = false;
       state.ghosts.forEach((g, i) => {
         g.x = g.spawn.x; g.y = g.spawn.y;
         g.state = "chase"; g.dir = DIRS.up; g.dirName = "up";
+        g.wasCenter = false;
         g.releaseAt = state.time + 1.5 + i * 2.2;
       });
       state.frightTimer = 0;
