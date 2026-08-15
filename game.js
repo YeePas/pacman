@@ -86,6 +86,7 @@
   // afwisselend naar hun eigen hoek. Geeft veel ademruimte.
   const SCATTER_SEC = 8;
   const CHASE_SEC = 12;
+  const JAIL_SEC = 4;   // wachttijd in de gevangenis nadat een spookje is opgegeten
 
   const state = {
     scene: "menu",        // menu | play | message
@@ -219,9 +220,10 @@
       const cx = Math.round(g.x), cy = Math.round(g.y);
       g.x = cx; g.y = cy;
 
-      // teruggekeerd bij spawn -> weer normaal
+      // teruggekeerd bij spawn -> even in de gevangenis wachten, dan weer actief
       if (g.state === "eaten" && cx === g.spawn.x && cy === g.spawn.y) {
         g.state = "chase";
+        g.releaseAt = state.time + JAIL_SEC;
       }
 
       // doel bepalen
