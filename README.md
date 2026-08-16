@@ -1,4 +1,4 @@
-# 🍔 Timo & Kaj Pac-Man
+# 🍔 Timo & Kaj Pak-Mam
 
 Een zelfgemaakte Pac-Man:
 - **Hamburgers** 🍔 = de grote power-rondjes (eet je die op, dan kun je de spookjes even opeten)
